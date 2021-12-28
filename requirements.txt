@@ -1,0 +1,7 @@
+foolbox==3.3.1
+jupyter
+pandas
+pytorch-lightning==1.5.6
+sklearn
+seaborn
+torchdiffeq==0.2.2
