@@ -46,7 +46,7 @@ def main(args):
     modification = get_modification_transform(**vars(args))
     print(modification)
     
-    dataset = get_tinyimagenet(modification, num_images=1_000, split='test')
+    dataset = get_tinyimagenet(modification, num_images=args.num_images, split='test')
     dataloader = DataLoader(dataset, batch_size=1, num_workers=2)
 
     epsilons = [
@@ -150,6 +150,8 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Attack Forensic Neural ODE with L2 Carlini Wagner')
     parser.add_argument('run_dir', type=Path, help='path to root dir of trained model')
+    parser.add_argument('-n', '--num-images', type=int, default=1_000, help='number of images to process')
+
     subparsers = parser.add_subparsers(dest='modification', help='type of image modifications to detect')
 
     filter_parser = subparsers.add_parser('filter')
