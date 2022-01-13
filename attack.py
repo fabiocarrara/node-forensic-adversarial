@@ -3,12 +3,12 @@ from pathlib import Path
 
 import foolbox as fb
 import pandas as pd
-from mods import get_modification_transform
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from dataloader import get_tinyimagenet
+from mods import add_modification_argparse, get_modification_transform
 from train import LitODENet
 
 
@@ -152,11 +152,7 @@ if __name__ == "__main__":
     parser.add_argument('run_dir', type=Path, help='path to root dir of trained model')
     parser.add_argument('-n', '--num-images', type=int, default=1_000, help='number of images to process')
 
-    subparsers = parser.add_subparsers(dest='modification', help='type of image modifications to detect')
-
-    filter_parser = subparsers.add_parser('filter')
-    filter_parser.add_argument('operation', choices=('median', 'mean'), help='filter operation')
-    filter_parser.add_argument('window-size', type=int, help='filter window size')
-
+    add_modification_argparse(parser)
+    
     args = parser.parse_args()
     main(args)

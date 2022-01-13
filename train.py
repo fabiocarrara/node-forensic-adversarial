@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 
 from dataloader import get_tinyimagenet
 from model import ODENet
-from mods import get_modification_transform
+from mods import add_modification_argparse, get_modification_string, get_modification_transform
 
 
 class LitODENet(pl.LightningModule):
@@ -60,16 +60,10 @@ class LitODENet(pl.LightningModule):
         }
 
 
-def get_run_dir(args):
-    if args['modification'] == 'filter':
-        op, w = args["operation"], args["window-size"]
-        return f'runs/{op}-{w}x{w}'
-
-
 def main(args):
     seed_everything(42, workers=True)
 
-    run_dir = get_run_dir(args)
+    run_dir = 'runs/' + get_modification_string(args)
     modification = get_modification_transform(**args)
     odenet = LitODENet(modification=modification, lr=1e-2)
 
@@ -86,13 +80,10 @@ def main(args):
     # trainer.tune(odenet)
     trainer.fit(odenet)
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train ODENet Forensic Classifier')
-    subparsers = parser.add_subparsers(dest='modification', help='type of image modifications to detect')
-
-    filter_parser = subparsers.add_parser('filter')
-    filter_parser.add_argument('operation', choices=('median', 'mean'), help='filter operation')
-    filter_parser.add_argument('window-size', type=int, help='filter window size')
+    add_modification_argparse(parser)
 
     args = parser.parse_args()
     args = vars(args)

@@ -2,6 +2,7 @@ from pathlib import Path
 
 from PIL import Image
 import pandas as pd
+from mods import PILCopyMoveTransform, PILFilterTransform, PILHistEqTransform, PILJpegQualityTransform
 from torch.utils.data import Dataset, ConcatDataset
 from torchvision.transforms import ToTensor, Compose
 
@@ -75,16 +76,40 @@ if __name__ == "__main__":
     from mods import PILFilterTransform
     
     clean_transform = ToTensor()
-    clean_dataset = TinyImageNet200(num_images_per_class=10, split='val', target=0, transform=clean_transform)
+    clean_dataset = TinyImageNet200(num_images=200, split='val', target=0, transform=clean_transform)
     clean_dataloader = DataLoader(clean_dataset, batch_size=16, shuffle=False)
     x, y = next(iter(clean_dataloader))
     save_image(x, 'clean.png', nrow=4)
 
+    # filter modification
     for filter in ('mean', 'median'):
         for kernel_size in (3, 5, 7):
             modif_transform = Compose((PILFilterTransform(filter, kernel_size), ToTensor()))
-            modif_dataset = TinyImageNet200(num_images_per_class=10, split='val', target=1, transform=modif_transform)
+            modif_dataset = TinyImageNet200(num_images=200, split='val', target=1, transform=modif_transform)
             modif_dataloader = DataLoader(modif_dataset, batch_size=16, shuffle=False)
             x, y = next(iter(modif_dataloader))
             save_image(x, f'{filter}{kernel_size}.png', nrow=4)
+    
+    # hist-eq modification
+    modif_transform = Compose((PILHistEqTransform(), ToTensor()))
+    modif_dataset = TinyImageNet200(num_images=200, split='val', target=1, transform=modif_transform)
+    modif_dataloader = DataLoader(modif_dataset, batch_size=16, shuffle=False)
+    x, y = next(iter(modif_dataloader))
+    save_image(x, f'hist-eq.png', nrow=4)
+
+    # jpeg modification
+    for quality in (60, 75, 90):
+        modif_transform = Compose((PILJpegQualityTransform(quality), ToTensor()))
+        modif_dataset = TinyImageNet200(num_images=200, split='val', target=1, transform=modif_transform)
+        modif_dataloader = DataLoader(modif_dataset, batch_size=16, shuffle=False)
+        x, y = next(iter(modif_dataloader))
+        save_image(x, f'jpeg{quality}.png', nrow=4)
+    
+    # copy-move
+    for seed in (23, 42):
+        modif_transform = Compose((PILCopyMoveTransform(seed), ToTensor()))
+        modif_dataset = TinyImageNet200(num_images=200, split='val', target=1, transform=modif_transform)
+        modif_dataloader = DataLoader(modif_dataset, batch_size=16, shuffle=False)
+        x, y = next(iter(modif_dataloader))
+        save_image(x, f'copymove{seed}.png', nrow=4)
 
