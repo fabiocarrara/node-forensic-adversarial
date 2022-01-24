@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 
 import pytorch_lightning as pl
 from pytorch_lightning import Trainer, seed_everything
@@ -65,8 +66,15 @@ def main(args):
 
     run_dir = 'runs/' + get_modification_string(args)
     modification = get_modification_transform(args)
+    odenet = LitODENet(modification=modification, lr=1e-2)
+
+    resume = None
+    if args.get('resume', False):
+        ckpts = Path(run_dir).glob('lightning_logs/version_*/checkpoints/*.ckpt')
+        resume = sorted(ckpts, reverse=True, key=lambda p: p.stat().st_mtime)[0]
 
     trainer = Trainer(
+        resume_from_checkpoint=resume,
         default_root_dir=run_dir,
         max_epochs=args['epochs'],
         gpus=1,
@@ -83,6 +91,8 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train ODENet Forensic Classifier')
     parser.add_argument('-e', '--epochs', type=int, default=50, help='number of training epochs')
+    parser.add_argument('-r', '--resume', default=False, action='store_true', help='resume training')
+
     add_modification_argparse(parser)
 
     args = parser.parse_args()
