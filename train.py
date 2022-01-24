@@ -68,7 +68,7 @@ def main(args):
 
     trainer = Trainer(
         default_root_dir=run_dir,
-        max_epochs=50,
+        max_epochs=args['epochs'],
         gpus=1,
         deterministic=True,
         callbacks=[
@@ -82,6 +82,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train ODENet Forensic Classifier')
+    parser.add_argument('-e', '--epochs', type=int, default=50, help='number of training epochs')
     add_modification_argparse(parser)
 
     args = parser.parse_args()
