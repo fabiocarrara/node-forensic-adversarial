@@ -64,8 +64,7 @@ def main(args):
     seed_everything(42, workers=True)
 
     run_dir = 'runs/' + get_modification_string(args)
-    modification = get_modification_transform(**args)
-    odenet = LitODENet(modification=modification, lr=1e-2)
+    modification = get_modification_transform(args)
 
     trainer = Trainer(
         default_root_dir=run_dir,

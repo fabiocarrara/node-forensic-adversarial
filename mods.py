@@ -90,7 +90,7 @@ class PILCopyMoveTransform(object):
         return self.__class__.__name__ + f'(seed={self.seed})'
 
 
-def get_modification_transform(**kwargs):
+def get_modification_transform(kwargs):
     modification = kwargs['modification']
 
     if modification == 'filter':

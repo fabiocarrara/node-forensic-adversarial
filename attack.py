@@ -43,7 +43,7 @@ def main(args):
     fmodel = fb.PyTorchModel(model, bounds=(0, 1))
     attack = fb.attacks.L2CarliniWagnerAttack(binary_search_steps=7, steps=1000)
 
-    modification = get_modification_transform(**vars(args))
+    modification = get_modification_transform(vars(args))
     print(modification)
     
     dataset = get_tinyimagenet(modification, num_images=args.num_images, split='test')
