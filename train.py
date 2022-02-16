@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytorch_lightning as pl
 from pytorch_lightning import Trainer, seed_everything
-from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
@@ -52,12 +52,16 @@ class LitODENet(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
-        lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer)
+        lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=1e-7)
+
         return {
             'optimizer': optimizer, 
-            'lr_scheduler': lr_scheduler,
-            'monitor': 'val_loss',
-            'frequency': 1
+            'lr_scheduler': {
+                'scheduler': lr_scheduler,
+                'interval': 'epoch',
+                'monitor': 'val_loss',
+                'frequency': 1
+            }
         }
 
 
@@ -66,7 +70,7 @@ def main(args):
 
     run_dir = 'runs/' + get_modification_string(args)
     modification = get_modification_transform(args)
-    odenet = LitODENet(modification=modification, lr=1e-2)
+    odenet = LitODENet(modification=modification, lr=1e-3)
 
     resume = None
     if args.get('resume', False):
@@ -86,7 +90,6 @@ def main(args):
         ]
     )
 
-    # trainer.tune(odenet)
     trainer.fit(odenet)
 
 
