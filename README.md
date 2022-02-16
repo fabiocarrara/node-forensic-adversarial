@@ -18,10 +18,20 @@ We provide a [`Dockerfile`](Dockerfile) to setup the environment we used during 
 
 ## Reproduce
 
-Use the [`reproduce.sh`](reproduce.sh) script to train the models and generate adversarial samples.
+Download the data:
 
-> `./reproduce.sh`
+```bash
+cd data/
+./download_data.sh
+cd ..
+```
 
-Results will be store in the `runs/` folder.
+Use the [`reproduce.sh`](reproduce.sh) script to train the models and generate adversarial samples:
+
+```bash
+./reproduce.sh
+```
+
+WARNING: Adversarial generation can take days. Results will be store in the `runs/` folder.
 
 Run the [`show.ipynb`](show.ipynb) notebook to generate plots and aggregated results of the paper.
