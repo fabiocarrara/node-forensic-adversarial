@@ -71,7 +71,8 @@ def main(args):
     resume = None
     if args.get('resume', False):
         ckpts = Path(run_dir).glob('lightning_logs/version_*/checkpoints/*.ckpt')
-        resume = sorted(ckpts, reverse=True, key=lambda p: p.stat().st_mtime)[0]
+        ckpts = sorted(ckpts, reverse=True, key=lambda p: p.stat().st_mtime)
+        resume = ckpts[0] if ckpts else None
 
     trainer = Trainer(
         resume_from_checkpoint=resume,
@@ -80,7 +81,8 @@ def main(args):
         gpus=1,
         deterministic=True,
         callbacks=[
-            ModelCheckpoint(monitor="val_loss")
+            ModelCheckpoint(monitor="val_loss", save_last=True),
+            LearningRateMonitor(logging_interval='step')
         ]
     )
 

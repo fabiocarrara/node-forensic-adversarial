@@ -25,7 +25,7 @@ class OneToTwoOutputs(torch.nn.Module):
 
 
 def main(args):
-    ckpts = args.run_dir.glob('lightning_logs/version_*/checkpoints/*.ckpt')
+    ckpts = args.run_dir.glob('lightning_logs/version_*/checkpoints/epoch*.ckpt')
     ckpt = sorted(ckpts, reverse=True, key=lambda p: p.stat().st_mtime)[0]
     print('Loading ckpt:', ckpt)
 
