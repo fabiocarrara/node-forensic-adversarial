@@ -1,8 +1,19 @@
 #!/bin/bash
 
-python train.py filter median 7
-python attack.py runs/median-7x7 filter median 7
+# filtering
+for OP in median mean; do
+for K in 3 5 7; do
+        python train.py filter $OP $K
+        python attack.py -n 400 runs/${OP}-${K}x${K} filter $OP $K
+done
+done
 
-python train.py filter median 5
-python attack.py runs/median-5x5 filter median 5
+# hist-eq
+python train.py hist-eq
+python attack.py -n 400 runs/hist-eq hist-eq
 
+# jpeg
+for Q in 60; do
+        python train.py -e 500 jpeg $Q
+        python attack.py -n 400 runs/jpeg-${Q} jpeg $Q
+done
