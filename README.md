@@ -12,7 +12,7 @@ Adversarial Robustness in Image Forensics' by Roberto Caldelli, Fabio Carrara, a
  * `torch>=1.9.1`
  * `pytorch-lightning==1.5.6`
  * `foolbox==3.3.1`
- * torchdiffeq==0.2.2`
+ * `torchdiffeq==0.2.2`
 
 We provide a [`Dockerfile`](Dockerfile) to setup the environment we used during experiments.
 
